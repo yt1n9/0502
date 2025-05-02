@@ -1,4 +1,5 @@
 let capture;
+let graphics;
 
 function setup() {
   // 設定畫布為全螢幕大小
@@ -14,6 +15,9 @@ function setup() {
   capture.size(videoWidth, videoHeight);
   capture.elt.setAttribute('playsinline', ''); // 修正行動裝置問題
   capture.hide(); // 隱藏原始的攝影機影像
+
+  // 建立與視訊畫面相同大小的 graphics
+  graphics = createGraphics(videoWidth, videoHeight);
 }
 
 function draw() {
@@ -30,6 +34,20 @@ function draw() {
   let y = (height - capture.height) / 2;
   image(capture, x, y, capture.width, capture.height);
   
+  // 更新 graphics 的內容
+  graphics.background(0); // 設定背景為黑色
+  for (let i = 0; i < graphics.width; i += 20) {
+    for (let j = 0; j < graphics.height; j += 20) {
+      let col = capture.get(i, j); // 從 capture 中取得顏色
+      graphics.fill(col);
+      graphics.noStroke();
+      graphics.ellipse(i + 10, j + 10, 15, 15); // 繪製圓形
+    }
+  }
+  
+  // 將 graphics 繪製在視訊畫面的上方
+  image(graphics, x, y, capture.width, capture.height);
+  
   pop(); // 恢復畫布狀態
 }
 
@@ -37,4 +55,3 @@ function windowResized() {
   // 當視窗大小改變時，重新調整畫布大小
   resizeCanvas(windowWidth, windowHeight);
 }
-
